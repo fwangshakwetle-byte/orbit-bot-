@@ -16,7 +16,15 @@ MAX_ROUNDS = 3
 DAILY_STOP_LOSS = 10000
 DAILY_TAKE_PROFIT = 15000
 iq = IQ_Option(IQ_EMAIL, IQ_PASSWORD)
-check, _ = iq.connect()
+
+# Safe connect - don't let IQ's verify reply kill the whole bot
+try:
+    check, reason = iq.connect()
+    print("IQ connect result:", check, reason)
+except Exception as e:
+    print("IQ connect crashed (verify issue):", e)
+    check = False
+    reason = str(e)
 if check:
     iq.change_balance("PRACTICE")
     print("Connected - PRACTICE")
