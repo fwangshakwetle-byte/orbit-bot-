@@ -1,9 +1,7 @@
-import os
-import threading
+import os, asyncio, time, threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 def keep_alive():
-    port = int(os.environ.get("PORT", 10000))
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             self.send_response(200)
@@ -11,10 +9,18 @@ def keep_alive():
             self.wfile.write(b"Bot is alive")
         def log_message(self, *args):
             pass
+    port = int(os.environ.get("PORT", 10000))
     server = HTTPServer(("0.0.0.0", port), Handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
+    print(f"Keep alive server on port {port}")
 
 keep_alive()
+
+import pandas as pd
+from iqoptionapi.stable_api import IQ_Option
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
+from dotenv import load_dotenv
 import os, asyncio, time
 import pandas as pd
 from iqoptionapi.stable_api import IQ_Option
